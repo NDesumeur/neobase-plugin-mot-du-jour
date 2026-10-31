@@ -1,0 +1,19 @@
+{
+  "id": "neobase.motdujour",
+  "name": "Mot du jour",
+  "version": "1.0.0",
+  "author": "NDesumeur",
+  "description": "Trouve un mot français en 6 essais : la première lettre est donnée, la longueur change chaque jour.",
+  "icon": "icon.png",
+  "entry": "index.js",
+  "view": "mot-du-jour",
+  "neobase": ">=4.0.0",
+  "type": "app",
+  "category": "Jeux",
+  "mobile": false,
+  "system": false,
+  "dependencies": {},
+  "permissions": [
+    "full"
+  ]
+}
