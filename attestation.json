@@ -1,0 +1,9 @@
+{
+  "pluginId": "neobase.motdujour",
+  "repo": "NDesumeur/neobase-plugin-mot-du-jour",
+  "version": "1.0.1",
+  "sha256": "4f649517521377699c710c5408bfade4fd0ce8f8dacba54904f52eb5eb0333d0",
+  "approvedAt": "2026-10-31T17:51:20.967Z",
+  "neobase": ">=4.0.0",
+  "signature": "xh4TUMCuau65cz5ANOP1/KmYFwGKdblaLMM6Rn0S+RJxjwZlAq8tdZU4jn8d8YnBIV1JgqEaTcq92RXHuU9XBQ=="
+}
