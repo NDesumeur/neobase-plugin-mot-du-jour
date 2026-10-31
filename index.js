@@ -2,11 +2,60 @@
 // Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
 // Elle demande l'accès complet pour utiliser les outils d'interface de NeoBase. NeoBase ne l'ouvre que si elle est signée.
 const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Mot du jour</span><span class=\"hint\" id=\"mdInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"mdMode\" title=\"Mode de jeu\"></select><button class=\"btn px\" id=\"mdShare\" title=\"Copie la grille de couleurs (sans le mot)\">PARTAGER</button><button class=\"btn main px\" id=\"mdNew\">NOUVEAU MOT</button></div></div>\n      <div class=\"mdWrap\"><div id=\"mdGrid\" class=\"mdGrid\"></div><div id=\"mdMsg\" class=\"mdMsg\"></div><div id=\"mdKeys\" class=\"mdKeys\"></div><div id=\"mdStats\" class=\"mdStats\"></div></div>\n      <div class=\"hint\">Trouve le mot en 6 essais. La première lettre est donnée et la longueur change chaque jour (5 à 8 lettres). Carré rouge : bonne lettre bien placée · rond jaune : la lettre est dans le mot, ailleurs · gris : elle n'y est pas. Les accents ne comptent pas, et le mot tapé doit exister (toutes les formes : pluriels, conjugaisons). Le même mot pour tout le monde chaque jour ; en partie libre, autant de mots que tu veux. Parties, séries et statistiques sauvegardées et synchronisées. Mots : Lexique 3.83 (CC BY-SA 4.0).</div>\n    </div>";
+/*CSS-MOVED*/ const CSS = `.mdWrap{display:grid;justify-items:center;gap:12px;padding:14px;background:#05010b;box-shadow:0 0 0 3px var(--line2)}
+.mdGrid{display:grid;gap:6px}
+.mdRow{display:grid;grid-template-columns:repeat(var(--n),46px);gap:6px}
+.mdRow.shake{animation:mdShake .35s}
+.mdCell{height:46px;display:grid;place-items:center;font:18px var(--title);color:#fff;background:#160d30;box-shadow:inset 0 0 0 2px #3a2a6e}
+.mdCell.typed{box-shadow:inset 0 0 0 2px var(--lilac)}
+.mdCell.ghost{color:#5e4d85}
+.mdCell.md2{background:#d8344e;box-shadow:inset 0 0 0 2px #ff6f86}
+.mdCell.md1{background:#160d30;box-shadow:none;background-image:radial-gradient(circle,#ffc23a 0 62%,transparent 64%);color:#130a20}
+.mdCell.md0{background:#2a2440;box-shadow:none;color:#8f8fa8}
+.mdCell.flip{animation:mdFlip .45s both}
+@keyframes mdShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.mdMsg{min-height:16px;color:var(--lilac)}
+.mdMsg.err{color:#ff6f86}
+.mdKeys{display:grid;gap:6px}
+.mdKRow{display:flex;gap:5px;justify-content:center}
+.mdKey{min-width:34px;height:40px;font:11px var(--title);color:#fff;background:#2a1f50;border:0;box-shadow:inset 0 -3px 0 #160d30;cursor:var(--cp,pointer)}
+.mdKey.wide{min-width:66px;font-size:8px}
+.mdKey:hover{background:#3a2a6e}
+.mdKey.ok{background:#d8344e}
+.mdKey.near{background:#c99a1e;color:#130a20}
+.mdKey.no{background:#17122a;color:#5e5470}
+.mdStats{display:grid;gap:3px;width:min(100%,360px);font-size:13px;color:var(--lilac)}
+.mdNums{margin-bottom:4px;text-align:center}
+.mdBar{display:flex;gap:6px;align-items:center}
+.mdBar span{width:12px}
+.mdBar b{background:#3a2a6e;color:#fff;text-align:right;padding:0 5px;font-weight:normal}
+.mdBar b.cur{background:#d8344e}
+.gSel{width:auto;font-size:14px;padding:6px 10px;margin-right:8px}
+.shGrid td.num{text-align:right}
+.mdRow{display:grid;gap:6px}
+.mdRow.head{position:sticky;top:0}
+.mdCell{display:flex;align-items:center;justify-content:center;gap:4px;min-height:54px;padding:6px;text-align:center;font-size:12px;overflow-wrap:break-word;hyphens:auto;min-width:0;color:#fff;background:#2a1d52;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35);animation:mdFlip .35s steps(4) backwards}
+.mdCell.wide img{width:32px;height:32px}
+.mdCell.ok{background:#2f8f5a}
+.mdCell.part{background:#c0862a}
+.mdCell.no{background:#9a2a44}
+.mdCell i{font-style:normal;font-size:18px;color:#ffd07a}
+.mdCell.wide{justify-content:flex-start;padding:10px 14px;min-height:0;font-size:15px}
+.mdRow .mdCell:nth-child(2){animation-delay:.05s}
+.mdRow .mdCell:nth-child(3){animation-delay:.1s}
+.mdRow .mdCell:nth-child(4){animation-delay:.15s}
+.mdRow .mdCell:nth-child(5){animation-delay:.2s}
+.mdRow .mdCell:nth-child(6){animation-delay:.25s}
+.mdRow .mdCell:nth-child(7){animation-delay:.3s}
+.mdRow .mdCell:nth-child(8){animation-delay:.35s}
+.mdRow .mdCell:nth-child(9){animation-delay:.4s}
+`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
 export default async function (ctx) {
   const view = ctx.view;
   if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
+  ctx.host.addStyle(CSS);
   view.innerHTML = HTML;
   const $ = id => id === "motsApp" ? view : (view.querySelector('#' + id) || document.getElementById(id));  // les identifiants de ta vue d'abord, puis ceux de la page (fenêtres, menus)
   const doc = async n => { try { return await folder.read(n); } catch { return null; } };
