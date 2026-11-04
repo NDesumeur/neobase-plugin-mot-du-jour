@@ -1,6 +1,6 @@
 // Mot du jour : ton appli d'origine (HTML et code inchangés), livrée en plugin.
-// Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
-// Elle tourne dans le bac à sable de NeoBase, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
+// Ses données sont dans le dossier du plugin, que NeoDex sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoDex.
+// Elle tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
 const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Mot du jour</span><span class=\"hint\" id=\"mdInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"mdMode\" title=\"Mode de jeu\"></select><button class=\"btn px\" id=\"mdShare\" title=\"Copie la grille de couleurs (sans le mot)\">PARTAGER</button><button class=\"btn main px\" id=\"mdNew\">NOUVEAU MOT</button></div></div>\n      <div class=\"mdWrap\"><div id=\"mdGrid\" class=\"mdGrid\"></div><div id=\"mdMsg\" class=\"mdMsg\"></div><div id=\"mdKeys\" class=\"mdKeys\"></div><div id=\"mdStats\" class=\"mdStats\"></div></div>\n      <div class=\"hint\">Trouve le mot en 6 essais. La première lettre est donnée et la longueur change chaque jour (5 à 8 lettres). Carré rouge : bonne lettre bien placée · rond jaune : la lettre est dans le mot, ailleurs · gris : elle n'y est pas. Les accents ne comptent pas, et le mot tapé doit exister (toutes les formes : pluriels, conjugaisons). Le même mot pour tout le monde chaque jour ; en partie libre, autant de mots que tu veux. Parties, séries et statistiques sauvegardées et synchronisées. Mots : Lexique 3.83 (CC BY-SA 4.0).</div>\n    </div>";
 /*CSS-MOVED*/ const CSS = `.mdWrap{display:grid;justify-items:center;gap:12px;padding:14px;background:#05010b;box-shadow:0 0 0 3px var(--line2)}
 .mdGrid{display:grid;gap:6px}
@@ -49,10 +49,10 @@ const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\
 .mdRow .mdCell:nth-child(7){animation-delay:.3s}
 .mdRow .mdCell:nth-child(8){animation-delay:.35s}
 .mdRow .mdCell:nth-child(9){animation-delay:.4s}
-`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
+`;  // le style de ce plugin (il utilise les variables du thème de NeoDex)
 export default async function (ctx) {
   const view = ctx.view;
-  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
+  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoDex pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
   ctx.host.addStyle(CSS);
@@ -202,7 +202,7 @@ function mdRender(reveal) {
 }
 // the result as squares, to paste anywhere (the word is not in it)
 function mdShareText() {
-  const g = md.cur.guesses, head = md.mode === 'jour' ? 'NeoBase · Mot du jour ' + md.cur.day : 'NeoBase · Mot libre';
+  const g = md.cur.guesses, head = md.mode === 'jour' ? 'NeoDex · Mot du jour ' + md.cur.day : 'NeoDex · Mot libre';
   return head + ' · ' + (md.cur.won ? g.length : 'X') + '/' + MD.tries + '\n' + g.map(w => mdScore(w, md.plain).map(r => ['⬛', '🟡', '🟥'][r]).join('')).join('\n');
 }
 document.addEventListener('keydown', e => {
