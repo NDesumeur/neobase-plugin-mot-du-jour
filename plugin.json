@@ -1,7 +1,7 @@
 {
   "id": "neodex.motdujour",
   "name": "Mot du jour",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "NDesumeur",
   "description": "Trouve un mot français en 6 essais : la première lettre est donnée, la longueur change chaque jour.",
   "icon": "icon.png",
