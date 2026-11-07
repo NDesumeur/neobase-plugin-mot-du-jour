@@ -1,27 +1,28 @@
 // Mot du jour : ton appli d'origine (HTML et code inchangés), livrée en plugin.
 // Ses données sont dans le dossier du plugin, que NeoDex sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoDex.
 // Elle tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
-const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Mot du jour</span><span class=\"hint\" id=\"mdInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"mdMode\" title=\"Mode de jeu\"></select><button class=\"btn px\" id=\"mdShare\" title=\"Copie la grille de couleurs (sans le mot)\">PARTAGER</button><button class=\"btn main px\" id=\"mdNew\">NOUVEAU MOT</button></div></div>\n      <div class=\"mdWrap\"><div id=\"mdGrid\" class=\"mdGrid\"></div><div id=\"mdMsg\" class=\"mdMsg\"></div><div id=\"mdKeys\" class=\"mdKeys\"></div><div id=\"mdStats\" class=\"mdStats\"></div></div>\n      <div class=\"hint\">Trouve le mot en 6 essais. La première lettre est donnée et la longueur change chaque jour (5 à 8 lettres). Carré rouge : bonne lettre bien placée · rond jaune : la lettre est dans le mot, ailleurs · gris : elle n'y est pas. Les accents ne comptent pas, et le mot tapé doit exister (toutes les formes : pluriels, conjugaisons). Le même mot pour tout le monde chaque jour ; en partie libre, autant de mots que tu veux. Parties, séries et statistiques sauvegardées et synchronisées. Mots : Lexique 3.83 (CC BY-SA 4.0).</div>\n    </div>";
+const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Mot du jour</span><span class=\"hint\" id=\"mdInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"mdMode\" title=\"Mode de jeu\"></select><button class=\"btn px\" id=\"mdShare\" title=\"Copie la grille de couleurs (sans le mot)\">PARTAGER</button><button class=\"btn main px\" id=\"mdNew\">NOUVEAU MOT</button></div></div>\n      <div class=\"mdWrap\"><div id=\"mdGrid\" class=\"mdGrid\"></div><div id=\"mdMsg\" class=\"mdMsg\"></div><div id=\"mdKeys\" class=\"mdKeys\"></div><div id=\"mdStats\" class=\"mdStats\"></div></div>\n      <div class=\"hint\">Trouve le mot en 6 essais. La première lettre est donnée et la longueur change chaque jour (5 à 8 lettres). Carré vert : bonne lettre bien placée · rond jaune : la lettre est dans le mot, ailleurs · gris : elle n'y est pas. Les accents ne comptent pas, et le mot tapé doit exister (toutes les formes : pluriels, conjugaisons). Le même mot pour tout le monde chaque jour ; en partie libre, autant de mots que tu veux. Parties, séries et statistiques sauvegardées et synchronisées. Mots : Lexique 3.83 (CC BY-SA 4.0).</div>\n    </div>";
 /*CSS-MOVED*/ const CSS = `.mdWrap{display:grid;justify-items:center;gap:12px;padding:14px;background:#05010b;box-shadow:0 0 0 3px var(--line2)}
 .mdGrid{display:grid;gap:6px}
 .mdRow{display:grid;grid-template-columns:repeat(var(--n),46px);gap:6px}
 .mdRow.shake{animation:mdShake .35s}
-.mdCell{height:46px;display:grid;place-items:center;font:18px var(--title);color:#fff;background:#160d30;box-shadow:inset 0 0 0 2px #3a2a6e}
-.mdCell.typed{box-shadow:inset 0 0 0 2px var(--lilac)}
+.mdCell{height:46px;display:grid;place-items:center;font:18px var(--title);color:#fff;background:#160d30;box-shadow:inset 0 0 0 3px #2a1d52,inset 3px 3px 0 3px #0c0620;image-rendering:pixelated}
+.mdCell.typed{box-shadow:inset 0 0 0 3px var(--lilac),3px 3px 0 #05010b}
 .mdCell.ghost{color:#5e4d85}
-.mdCell.md2{background:#d8344e;box-shadow:inset 0 0 0 2px #ff6f86}
-.mdCell.md1{background:#160d30;box-shadow:none;background-image:radial-gradient(circle,#ffc23a 0 62%,transparent 64%);color:#130a20}
-.mdCell.md0{background:#2a2440;box-shadow:none;color:#8f8fa8}
+.mdCell.md2{background:#2f9a52;box-shadow:inset -4px -4px 0 #1c6a36,inset 4px 4px 0 #6ee08a}
+.mdCell.md1{background:#160d30 url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffc23a' d='M2 0h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1z'/%3E%3Cpath fill='%23ffe9a0' d='M2 1h2v1h-1v1h-1z'/%3E%3C/svg%3E\") center/38px 38px no-repeat;box-shadow:inset -4px -4px 0 #0c0620;color:#130a20}
+.mdCell.md0{background:#2a2440;box-shadow:inset -4px -4px 0 #1a1530,inset 4px 4px 0 #3a3458;color:#8f8fa8}
 .mdCell.flip{animation:mdFlip .45s both}
 @keyframes mdShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .mdMsg{min-height:16px;color:var(--lilac)}
 .mdMsg.err{color:#ff6f86}
 .mdKeys{display:grid;gap:6px}
 .mdKRow{display:flex;gap:5px;justify-content:center}
-.mdKey{min-width:34px;height:40px;font:11px var(--title);color:#fff;background:#2a1f50;border:0;box-shadow:inset 0 -3px 0 #160d30;cursor:var(--cp,pointer)}
+.mdKey{min-width:34px;height:40px;font:11px var(--title);color:#fff;background:#2a1f50;border:0;box-shadow:inset -3px -3px 0 #160d30,inset 3px 3px 0 #3e3070,0 3px 0 #05010b;cursor:var(--cp,pointer)}
+.mdKey:active{transform:translateY(2px);box-shadow:inset -3px -3px 0 #160d30}
 .mdKey.wide{min-width:66px;font-size:8px}
 .mdKey:hover{background:#3a2a6e}
-.mdKey.ok{background:#d8344e}
+.mdKey.ok{background:#2f9a52;box-shadow:inset -3px -3px 0 #1c6a36,inset 3px 3px 0 #6ee08a,0 3px 0 #05010b}
 .mdKey.near{background:#c99a1e;color:#130a20}
 .mdKey.no{background:#17122a;color:#5e5470}
 .mdStats{display:grid;gap:3px;width:min(100%,360px);font-size:13px;color:var(--lilac)}
@@ -29,7 +30,7 @@ const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\
 .mdBar{display:flex;gap:6px;align-items:center}
 .mdBar span{width:12px}
 .mdBar b{background:#3a2a6e;color:#fff;text-align:right;padding:0 5px;font-weight:normal}
-.mdBar b.cur{background:#d8344e}
+.mdBar b.cur{background:#2f9a52}
 .gSel{width:auto;font-size:14px;padding:6px 10px;margin-right:8px}
 .shGrid td.num{text-align:right}
 .mdRow{display:grid;gap:6px}
@@ -203,7 +204,7 @@ function mdRender(reveal) {
 // the result as squares, to paste anywhere (the word is not in it)
 function mdShareText() {
   const g = md.cur.guesses, head = md.mode === 'jour' ? 'NeoDex · Mot du jour ' + md.cur.day : 'NeoDex · Mot libre';
-  return head + ' · ' + (md.cur.won ? g.length : 'X') + '/' + MD.tries + '\n' + g.map(w => mdScore(w, md.plain).map(r => ['⬛', '🟡', '🟥'][r]).join('')).join('\n');
+  return head + ' · ' + (md.cur.won ? g.length : 'X') + '/' + MD.tries + '\n' + g.map(w => mdScore(w, md.plain).map(r => ['⬛', '🟨', '🟩'][r]).join('')).join('\n');
 }
 document.addEventListener('keydown', e => {
   if (!view.classList.contains('on') || !md || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || e.ctrlKey || e.altKey || e.metaKey) return;
